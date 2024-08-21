@@ -1,0 +1,1 @@
+from video 210 to 215, a introduction to hash is given. It need to watch again.
