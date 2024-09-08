@@ -1,5 +1,5 @@
 import time
-from constants import banner, error, make_date
+from constants import banner, error, make_date, get_int
 from users import User, admin_user, customer_user
 from auth import login, register
 from fruit import Fruit
@@ -19,63 +19,49 @@ def load_data():
             Fruit(fruit_name, price, unit, origin, discount, supply_date, expiry_date)
             
 load_data()
-banner('#')
-banner(' ')
 banner('Welcome to FruitChain')
-banner(' ')
-banner('#')
 while True:
     if current_user:
-        banner('#')
-        banner(' ')
         banner(f'Hello, {current_user.fullname}')
-        banner(' ')
-        banner('#')
     if current_user == None:
         print('Enter your option:\n1. Login\n2. Register\n3. Exit')
-        option = input(">  ")
+        option = get_int()
 
-        if option == '1':
+        if option == 1:
             current_user = login()
-        elif option == '2':
+        elif option == 2:
             current_user = register()
-        elif option == '3':
-            banner('#')
+        elif option == 3:
             banner("FruitChain is shutting down...")
             time.sleep(4)
             banner("Thank you!")
-            banner('#')
             break
         else:
-            error('!')
             error("Ops! You have chosen an invalid option!")
-            error('!')
 
     else:
         if current_user.is_admin():
             while True:
                 print("Enter your option:\n1. Add new fruit\n2. Update fruit\n3. Manage stock\n4. Manage users\n5. Manage orders\n6. Profile\n7. Logout")
-                op = input(">  ")
-                if op in "123456":
+                op = get_int()
+                if op in range(1,7):
                     admin_user(current_user, op)
-                elif op == '7':
+                elif op == 7:
                     break
                 else:
-                    error('!')
                     error("Ops! You have chosen an invalid option!")
-                    error('!')
+    
         else:
             while True:
                 print("Enter your option:\n1. See available fruits\n2. Flash-sale\n3. Cart\n4. Orders\n5. Profile\n6. Logout")    
-                op = input(">  ")
-                if op in "12345":
+                op = get_int()
+                if op in range(1,6):
                     customer_user(current_user, op)
-                elif op == '6':
+                elif op == 6:
                     break
                 else:
-                    error('!')
                     error("Ops! You have chosen an invalid option!")
-                    error('!')
+    
 
         current_user = None
         print("\nLogged out successfully!\n")

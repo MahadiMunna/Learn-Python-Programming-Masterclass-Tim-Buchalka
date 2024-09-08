@@ -9,9 +9,9 @@ def login():
         if user.user_name == user_name and user.get_password() == password:
             return user
     else:
-        error('!')
+        
         error("Invalid credentials. Try again.")
-        error('!')
+        
         return None
 
 def register():
@@ -24,12 +24,12 @@ def register():
     password = input("Password: ")
     re_pass = input("Re-type password: ")
     if password != re_pass:
-        error('!')
+        
         error("Passwords do not match. Try again.")
-        error('!')
+        
         return None
     else:
-        success('*')
+        
         success("Your account created successfully!")
-        success('*')
+        
         return User(user_name, first_name, last_name, email, gender, password)

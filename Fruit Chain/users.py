@@ -1,4 +1,4 @@
-from constants import generate_hash, error, success
+from constants import generate_hash, error, success, get_int
 from fruit import Fruit, add_fruit, view_fruits, update_fruit, manage_stock, user_fruits_view, flash_sale
 from cart import add_to_cart, view_cart
 from orders import view_orders, manage_orders
@@ -44,34 +44,34 @@ class User(object):
         return total
     
 def admin_user(current_user, op):
-    if op == '1':
+    if op == 1:
         add_fruit()
-    elif op == '2':
+    elif op == 2:
         view_fruits()
         update_fruit()
-    elif op == '3':
+    elif op == 3:
         view_fruits()
         manage_stock()
-    elif op == '4':
+    elif op == 4:
         view_users()
         manage_users()
-    elif op == '5':
+    elif op == 5:
         manage_orders()
-    elif op == '6':
+    elif op == 6:
         profile(current_user)
 
 def customer_user(current_user, op):
-    if op == '1':
+    if op == 1:
         user_fruits_view()
         add_to_cart(current_user)
-    elif op == '2':
+    elif op == 2:
         flash_sale()
         add_to_cart(current_user)
-    elif op == '3':
+    elif op == 3:
         view_cart(current_user)
-    elif op == '4':
+    elif op == 4:
         view_orders(current_user)
-    elif op == '5':
+    elif op == 5:
         profile(current_user)
 
 
@@ -79,20 +79,17 @@ def profile(current_user):
     print("\nWelcome to profile, " + current_user.fullname)
     while True:
         print("\nChoose your option from below: \n1. Update profile\n2. Change password\n0. Back")
-        option = input(">  ")
+        option = get_int()
 
-        if option == '1':
+        if option == 1:
             print(f"\nYour current profile information-\nName: {current_user.fullname}\nEmail: {current_user.email}\nGender: {current_user.gender}\n")
             current_user.first_name = input("Enter your first name: ")
             current_user.last_name = input("Enter your last name: ")
             current_user.email = input("Enter your email: ")
             current_user.gender = input("Enter your gender(Male/Female): ")
-
-            success('*')
             success("Profile updated successfully!")
-            success('*')
-            
-        elif option == '2':
+                
+        elif option == 2:
             current_pass = input("Enter your current password: ")
             password = generate_hash(current_pass)
             if current_user.get_password() == password:
@@ -101,24 +98,20 @@ def profile(current_user):
                 if new_pass == re_pass:
                     password = generate_hash(new_pass)
                     current_user.set_password(password)
-                    success('*')
                     success("Password changed successfully!")
-                    success('*')
+                    
                 else:
-                    error('!')
                     error("Passwords do not match. Try again.")
-                    error('!')
+                    
             else:
-                error('!')
                 error("Passwords do not match. Try again.")
-                error('!')
-        elif option == '0':
+                
+        elif option == 0:
             print()
             break
         else:
-            error('!')
             error("Ops! You have chosen an invalid option!")
-            error('!')
+            
 
 def view_users():
     for index, user in enumerate(User.user_list):
@@ -132,9 +125,9 @@ def view_users():
 
 def manage_users():
     print("\nChoose your option from below: \n1. Add new user\n2. Remove user\n3. Manage admin\n0. Back ")
-    option = input(">  ")
+    option = get_int()
 
-    if option == '1':
+    if option == 1:
         user_name = input("Username: ")
         first_name = input("First name: ")
         last_name = input("Last name: ")
@@ -143,41 +136,56 @@ def manage_users():
         password = input("Password: ")
         re_pass = input("Re-type password: ")
         if password != re_pass:
-            error('!')
             error("Passwords do not match. Try again.")
-            error('!')
+            
         else:
-            success('*')
             success("New user account created successfully!")
-            success('*')
+            
             User(user_name, first_name, last_name, email, gender, password)
-    elif option == '2':
-        no = int(input("Enter user no to remove: "))
+    elif option == 2:
+        print("Enter user no to remove:", end=" ")
+        no = get_int()
+        if no not in range(1,len(User.user_list)+1):
+            error("Invalid user no. Try again.")    
+            return
         user = User.user_list[no-1]
         User.user_list.remove(user)
-        success('*')
         success(f"{user.fullname} removed successfully.")
-        success('*')
-    elif option == '3':
+        
+    elif option == 3:
         print("\nChoose your option from below: \n1. Make new admin\n2. Remove from admin\n0. Back ")
-        option = input(">  ")
-        if option == '1':
-            no = int(input("Enter user no to make admin: "))
+        option = get_int()
+        if option == 0:
+            return
+        elif option == 1:
+            print("Enter user no to make admin:",end=" ")
+            no = get_int()
+            if no not in range(1,len(User.user_list)+1):
+                error("Invalid user no. Try again.")
+                return
             user = User.user_list[no-1]
+            if user.is_admin():
+                error("This user is already admin!")
+                return
             user.make_admin()
-            success('*')
             success(f"{user.fullname} made admin successfully.")
-            success('*')
-        elif option == '2':
-            no = int(input("Enter user no to remove from admin: "))
+            
+        elif option == 2:
+            print("Enter user no to remove from admin:", end=" ")
+            no = get_int()
+            if no not in range(1,len(User.user_list)+1):
+                error("Invalid user no. Try again.")
+                return
             user = User.user_list[no-1]
-            user.remove_admin()
-            success('*')
-            success(f"{user.fullname} removed from admin")
-            success('*')
-        elif option == '0':
-            print()
+            if user.is_admin():
+                user.remove_admin()
+                success(f"{user.fullname} removed from admin")
+            else:
+                error("This user is not admin!")
         else:
-            error('!')
             error("Ops! You have chosen an invalid option!")
-            error('!')
+    elif option == 0:
+        return
+    else:
+        error("Ops! You have chosen an invalid option!")
+            
